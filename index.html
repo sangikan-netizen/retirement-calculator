@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Retirement Calculator</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:linear-gradient(135deg,#1d2671,#c33764);
+margin:0;
+padding:25px;
+}
+
+.container{
+max-width:580px;
+margin:auto;
+background:white;
+padding:18px;
+border-radius:10px;
+box-shadow:0 6px 18px rgba(0,0,0,.2);
+}
+
+h2{
+text-align:center;
+margin-bottom:15px;
+}
+
+.row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:8px;
+font-size:14px;
+}
+
+.row input{
+width:160px;
+padding:5px;
+border-radius:5px;
+border:1px solid #ccc;
+}
+
+.buttons{
+display:flex;
+gap:10px;
+margin-top:10px;
+}
+
+button{
+flex:1;
+padding:9px;
+background:#6a11cb;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+.refresh{
+background:#999;
+}
+
+.copy{
+margin-top:8px;
+width:100%;
+background:#2e7d32;
+}
+
+.result{
+margin-top:15px;
+font-size:14px;
+line-height:1.5;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Retirement Calculator</h2>
+
+<div class="row">
+<span>Current Age</span>
+<input type="number" id="age">
+</div>
+
+<div class="row">
+<span>Retirement Age</span>
+<input type="number" id="retireAge">
+</div>
+
+<div class="row">
+<span>Monthly Expense (₹)</span>
+<input type="number" id="expense">
+</div>
+
+<div class="row">
+<span>Inflation %</span>
+<input type="number" id="inflation" value="6">
+</div>
+
+<div class="row">
+<span>Current Savings (₹)</span>
+<input type="number" id="savings">
+</div>
+
+<div class="row">
+<span>Monthly SIP (₹)</span>
+<input type="number" id="sip">
+</div>
+
+<div class="row">
+<span>Expected Return %</span>
+<input type="number" id="rate" value="12">
+</div>
+
+<div class="buttons">
+<button onclick="calculate()">Calculate</button>
+<button class="refresh" onclick="resetForm()">Refresh</button>
+</div>
+
+<button class="copy" onclick="copyResult()">Copy Result</button>
+
+<div class="result" id="result"></div>
+
+</div>
+
+<script>
+
+function calculate(){
+
+let age = Number(document.getElementById("age").value)
+let retireAge = Number(document.getElementById("retireAge").value)
+let expense = Number(document.getElementById("expense").value)
+let inflation = Number(document.getElementById("inflation").value)
+let savings = Number(document.getElementById("savings").value)
+let sip = Number(document.getElementById("sip").value)
+let rate = Number(document.getElementById("rate").value)
+
+if(!age || !retireAge || !expense){
+alert("Enter Age, Retirement Age and Expense")
+return
+}
+
+let years = retireAge - age
+
+let futureExpense =
+expense * Math.pow((1 + inflation/100), years)
+
+let annualExpense = futureExpense * 12
+
+let corpus = annualExpense * 25
+
+let r = rate/100/12
+let months = years * 12
+
+let sipFuture =
+sip * ((Math.pow(1+r,months)-1)/r) * (1+r)
+
+let savingsFuture =
+savings * Math.pow((1 + rate/100), years)
+
+let wealth = sipFuture + savingsFuture
+
+let gap = corpus - wealth
+
+document.getElementById("result").innerHTML =
+"Years to retirement: <b>"+years+"</b><br>"+
+"Future monthly expense: <b>₹"+Math.round(futureExpense).toLocaleString()+"</b><br>"+
+"Required corpus: <b>₹"+Math.round(corpus).toLocaleString()+"</b><br>"+
+"Projected wealth: <b>₹"+Math.round(wealth).toLocaleString()+"</b><br>"+
+"Gap: <b>₹"+Math.round(gap).toLocaleString()+"</b>"
+
+}
+
+function resetForm(){
+
+document.getElementById("age").value=""
+document.getElementById("retireAge").value=""
+document.getElementById("expense").value=""
+document.getElementById("savings").value=""
+document.getElementById("sip").value=""
+
+document.getElementById("result").innerHTML=""
+
+}
+
+function copyResult(){
+
+let text = document.getElementById("result").innerText
+
+navigator.clipboard.writeText(text)
+
+alert("Result copied. Paste it into ChatGPT for analysis.")
+
+}
+
+</script>
+
+</body>
+</html>
